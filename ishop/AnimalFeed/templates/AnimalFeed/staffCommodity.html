@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Интернет магазин комбикорм.</title>
+</head>
+<body>
+<br>
+
+<form method="POST">
+    {% csrf_token %}
+    <table>
+        <tr>
+            <td>
+                Название
+            </td>
+            <td>
+                Остаток на складе
+            </td>
+            <td>
+                Стоимость единицы
+            </td>
+        </tr>
+        {% for c in commodities %}
+            <tr>
+                <td>
+                    <input type="text" value="{{ c.commodity_name }}" id="name" name="name_{{ c.id }}">
+                </td>
+                <td>
+                    <input type="number" min="0" max="100000" value="{{ c.remained_count }}" id="rem"
+                           name="rem_{{ c.id }}">
+                </td>
+                <td>
+                    <input type="number" mid="0" max="100000" value="{{ c.cost_per_item }}" id="cpi"
+                           name="cpi_{{ c.id }}">
+                </td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td>
+                <input type="text" id="new_name" name="new_name">
+            </td>
+            <td>
+                <input type="number" min="0" max="100000" value="{{ c.remained_count }}" id="new_remained_count" name="new_remained_count">
+            </td>
+            <td>
+                <input type="number" mid="0" max="100000" value="{{ c.cost_per_item }}" id="new_cost" name="new_cost">
+            </td>
+        </tr>
+    </table>
+    <input type="submit" value="Изменить данные">
+</form>
+</body>
+</html>

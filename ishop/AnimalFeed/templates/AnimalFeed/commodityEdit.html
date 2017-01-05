@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Редактирование страницы товара</title>
+</head>
+<body>
+<h1>{{ Commodity.commodity_name }}</h1>
+<form method="POST">
+    {% csrf_token %}
+    <textarea name="new_info">{{ Commodity.commodity_info }}</textarea>
+    <input type="submit" value="Сохранить изменения"/>
+</form>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Подтверждение заказа</title>
+</head>
+<body>
+    {{ error_msg }}
+    <br>
+    {% if chosen %}
+        <form method="POST">
+        {% csrf_token %}
+        {% for id, name, val, cpi in chosen %}
+            <h1>{{name}}</h1>
+            cost per one: {{ cpi }}<br>
+            <input type='number' id='count' name='count_{{ id }}' min='0' value='{{ val }}'/>
+        {% endfor %}
+        <br><input type='text' id="delivery_address" name="delivery_address">Адрес доставки</input>
+        <br><input type='text' id="customer_name" name="customer_name">Ваше имя</input>
+        <br><input type='text' id="customer_phone" name="customer_phone">Ваш телефон</input>
+        <br><input type='submit' value="Оформить заказ."/>
+        </form>
+    {% else %}
+        <p>Вы пока ничего не выбрали.</p>
+    {% endif %}
+
+    <div>
+        Здесь могла быть ваша реклама.
+    </div>
+
+    {% if username %}
+        <h1>Здравствуйте, {{ username }}</h1>
+        <a href="../logout">Выход</a>
+    {% else %}
+        <h1>Вы не зарегистрированы.</h1>
+        <a href="../register">Зарегистрироваться</a>
+        <a href="../login">Войти</a>
+    {% endif %}
+    <br>
+    <a href="..">Главная страница</a>
+</body>
+</html>

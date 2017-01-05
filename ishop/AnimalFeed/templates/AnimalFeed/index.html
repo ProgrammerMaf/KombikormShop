@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Интернет магазин комбикорм.</title>
+</head>
+<body>
+    <br>
+    {% if commodities %}
+        <form method="POST">
+        {% csrf_token %}
+        {% for c in commodities %}
+            <a href="{{ c.id }}">{{c.commodity_name}}</a>
+            cost per one: {{ c.cost_per_item }}
+            <br>
+            <input type='number' value='0' min='0' max='{{ c.remained_count }}' id='count' name='count_{{ c.id }}' />
+            <br>
+        {% endfor %}
+        <input type='submit' value="В корзину"/>
+        </form>
+    {% else %}
+        <p>Пока доступных товаров нет. Зайдите позже.</p>
+    {% endif %}
+
+    <div>
+        Здесь могла быть ваша реклама.
+    </div>
+    {% if username %}
+        <h1>Здравствуйте, {{ username }}</h1>
+        <a href="logout">Выход</a>
+    {% else %}
+        <h1>Вы не зарегистрированы.</h1>
+        <a href="register">Зарегистрироваться</a>
+        <a href="login">Войти</a>
+    {% endif %}
+    <br>
+    <a href="confirmation">Оформить заказ</a>
+</body>
+</html>
