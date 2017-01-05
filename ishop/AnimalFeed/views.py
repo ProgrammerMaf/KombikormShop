@@ -76,7 +76,7 @@ class IndexView(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = dict()
-        context['username'] = self.request.user.username
+        context['user'] = self.request.user
         context['commodities'] = self.get_queryset()
         return context
 
@@ -96,11 +96,14 @@ class OrderConfirmation(generic.ListView):
         all_items.sort()
         return all_items
 
-    def get_context_data(self, error_msg=''):
+    def get_context_data(self, error_msg='', delivery_address='', customer_name='', phone=''):
         context = dict()
         context['error_msg'] = error_msg
         context['username'] = self.request.user.username
         context['chosen'] = self.get_chosen_items(Cart(self.request).cart)
+        context['delivery_address'] = delivery_address
+        context['customer_name'] = customer_name
+        context['customer_phone'] = phone
         return context
 
     def get_queryset(self):
@@ -126,7 +129,12 @@ class OrderConfirmation(generic.ListView):
 
     def page_with_error(self, request, error_message):
         return render(request, self.template_name,
-                      self.get_context_data(error_message))
+                      self.get_context_data(
+                          error_msg=error_message,
+                          delivery_address=request.POST['delivery_address'],
+                          customer_name=request.POST['customer_name'],
+                          phone=request.POST['customer_phone']
+                      ))
 
     def save_order(self, cart, total_cost, with_delivery, delivery_address, customer_name, customer_phone):
         new_order = Order(

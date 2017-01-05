@@ -25,8 +25,14 @@
     <div>
         Здесь могла быть ваша реклама.
     </div>
-    {% if username %}
-        <h1>Здравствуйте, {{ username }}</h1>
+    {% if user.is_authenticated %}
+        <h1>Здравствуйте, {{ user.username }}</h1>
+        {% if user.is_staff %}
+            <br>
+            <a href="staff_orders">Список заказов</a>
+            <br>
+            <a href="staff_commodity">Список товаров</a>
+        {% endif %}
         <a href="logout">Выход</a>
     {% else %}
         <h1>Вы не зарегистрированы.</h1>

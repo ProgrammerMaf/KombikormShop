@@ -23,5 +23,8 @@
     <input type='number' min='0' max='{{ Commodity.remained_count }}' id='count' name='count_{{ Commodity.id }}'/>
     <input type='submit' value="В корзину"/>
 </form>
+{% if user.is_staff %}
+    <a href="/{{ Commodity.id }}/edit">Редактировать.</a>
+{% endif %}
 </body>
 </html>

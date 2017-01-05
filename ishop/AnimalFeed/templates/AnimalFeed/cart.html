@@ -15,9 +15,9 @@
             cost per one: {{ cpi }}<br>
             <input type='number' id='count' name='count_{{ id }}' min='0' value='{{ val }}'/>
         {% endfor %}
-        <br><input type='text' id="delivery_address" name="delivery_address">Адрес доставки</input>
-        <br><input type='text' id="customer_name" name="customer_name">Ваше имя</input>
-        <br><input type='text' id="customer_phone" name="customer_phone">Ваш телефон</input>
+        <br><input type='text' value='{{ delivery_address }}' id="delivery_address" name="delivery_address">Адрес доставки</input>
+        <br><input type='text' value='{{ customer_name }}' id="customer_name" name="customer_name">Ваше имя</input>
+        <br><input type='text' value='{{ customer_phone }}' id="customer_phone" name="customer_phone">Ваш телефон</input>
         <br><input type='submit' value="Оформить заказ."/>
         </form>
     {% else %}
