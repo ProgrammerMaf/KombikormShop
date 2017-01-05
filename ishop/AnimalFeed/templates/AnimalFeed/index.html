@@ -1,45 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Интернет магазин комбикорм.</title>
-</head>
-<body>
-    <br>
-    {% if commodities %}
-        <form method="POST">
-        {% csrf_token %}
-        {% for c in commodities %}
-            <a href="{{ c.id }}">{{c.commodity_name}}</a>
-            cost per one: {{ c.cost_per_item }}
-            <br>
-            <input type='number' value='0' min='0' max='{{ c.remained_count }}' id='count' name='count_{{ c.id }}' />
-            <br>
-        {% endfor %}
-        <input type='submit' value="В корзину"/>
-        </form>
-    {% else %}
-        <p>Пока доступных товаров нет. Зайдите позже.</p>
-    {% endif %}
+{% extends 'AnimalFeed/base.html' %}
 
-    <div>
-        Здесь могла быть ваша реклама.
+{% block title %}Интернет-магазин кормов для животных artkorm.ru{% endblock %}
+
+{% block content %}
+    <header class="jumbotron hero-spacer">
+        <h3>Интернет-магазин кормов для животных artkorm.ru</h3>
+    </header>
+    <div class="list-group">
+        {% for c in commodities %}
+        <a href="{{ c.id }}" class="list-group-item">
+            <h4 class="list-group-item-heading">{{c.commodity_name}}</h4>
+            <p>Цена за 1шт.: {{ c.cost_per_item }}</p>
+            <p>Осталось на складе: {{ c.remained_count }}</p>
+        </a>
+        {% endfor %}
     </div>
-    {% if user.is_authenticated %}
-        <h1>Здравствуйте, {{ user.username }}</h1>
-        {% if user.is_staff %}
-            <br>
-            <a href="staff_orders">Список заказов</a>
-            <br>
-            <a href="staff_commodity">Список товаров</a>
-        {% endif %}
-        <a href="logout">Выход</a>
-    {% else %}
-        <h1>Вы не зарегистрированы.</h1>
-        <a href="register">Зарегистрироваться</a>
-        <a href="login">Войти</a>
-    {% endif %}
-    <br>
-    <a href="confirmation">Оформить заказ</a>
-</body>
-</html>
+{% endblock %}

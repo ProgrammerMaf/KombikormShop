@@ -13,7 +13,6 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import render
 import re
 
-
 class RegisterFormView(FormView):
     form_class = UserCreationForm
     # print(form_class.base_fields)
@@ -73,10 +72,9 @@ def update_cart(post_dict, cart, erase_previous_value):
 
 class IndexView(generic.ListView):
     template_name = 'AnimalFeed/index.html'
-
+    
     def get_context_data(self, **kwargs):
         context = dict()
-        context['user'] = self.request.user
         context['commodities'] = self.get_queryset()
         return context
 
@@ -99,7 +97,6 @@ class OrderConfirmation(generic.ListView):
     def get_context_data(self, error_msg='', delivery_address='', customer_name='', phone=''):
         context = dict()
         context['error_msg'] = error_msg
-        context['username'] = self.request.user.username
         context['chosen'] = self.get_chosen_items(Cart(self.request).cart)
         context['delivery_address'] = delivery_address
         context['customer_name'] = customer_name

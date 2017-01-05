@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Заказ подтверждён</title>
-</head>
-<body>
+{% extends 'AnimalFeed/base.html' %}
+
+{% block title %}Заказ подтверждён{% endblock %}
+
+{% block content %}
     Спасибо за заказ. Мы позвоним вам в ближайшее время.
-    <a href="/">На главную страницу</a>
-</body>
-</html>
+    <a href="{% url 'AnimalFeed:index' %}">На главную страницу</a>
+{% endblock %}
