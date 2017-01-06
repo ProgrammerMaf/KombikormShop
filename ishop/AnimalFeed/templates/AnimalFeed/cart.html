@@ -3,21 +3,51 @@
 {% block title %}Подтверждение заказа{% endblock %}
 
 {% block content %}
-    {{ error_msg }}
+    {% if error_msg %}
+        <div class="alert alert-danger" role="alert">
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            <span class="sr-only"></span>
+            {{ error_msg }}
+        </div>
+    {% endif %}
     {% if chosen %}
         <form method="POST">
             {% csrf_token %}
-            {% for id, name, val, cpi in chosen %}
-                <h1>{{ name }}</h1>
-                cost per one: {{ cpi }}<br>
-                <input type='number' id='count' name='count_{{ id }}' min='0' value='{{ val }}'/>
-            {% endfor %}
-            <br><input type='text' value='{{ delivery_address }}' id="delivery_address" name="delivery_address">Адрес
-            доставки</input>
-            <br><input type='text' value='{{ customer_name }}' id="customer_name" name="customer_name">Ваше имя</input>
-            <br><input type='text' value='{{ customer_phone }}' id="customer_phone" name="customer_phone">Ваш
-            телефон</input>
-            <br><input type='submit' value="Оформить заказ."/>
+            <div class="list-group">
+                {% for id, name, val, cpi in chosen %}
+                    <h1>{{ name }}</h1>
+                    Стоимость: {{ cpi }}<br>
+                    <input type='number' class="form-control" id='count' name='count_{{ id }}' min='0'
+                           value='{{ val }}'/>
+                {% endfor %}
+            </div>
+
+            <div class="form-group row">
+                <label for="smFormGroupInput" class="col-sm-2 col-form-label col-form-label-sm">Ваше имя</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control form-control-sm" id="customer_name"
+                           name="customer_name" value="{{ customer_name }}">
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="smFormGroupInput" class="col-sm-2 col-form-label col-form-label-sm">Ваш номер
+                    телефона</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control form-control-sm" id="customer_phone"
+                           name="customer_phone" value="{{ customer_phone }}">
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="smFormGroupInput" class="col-sm-2 col-form-label col-form-label-sm">Адрес доставки</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control form-control-sm" id="delivery_address"
+                           name="delivery_address" value="{{ delivery_address }}">
+                </div>
+            </div>
+
+            <br><input type='submit' class="btn" value="Оформить заказ."/>
         </form>
     {% else %}
         <p>Вы пока ничего не выбрали.</p>

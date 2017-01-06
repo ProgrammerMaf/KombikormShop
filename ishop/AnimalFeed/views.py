@@ -15,31 +15,17 @@ import re
 
 class RegisterFormView(FormView):
     form_class = UserCreationForm
-    # print(form_class.base_fields)
-    # for template changing
-    # OrderedDict([('username', <django.contrib.auth.forms.UsernameField object at 0x04565110>), ('password1', <django.forms.fields.CharField object at 0x0455B710>), ('password2', <django.forms.fields.CharField object at 0x0455BE90>)])
-    # Ссылка, на которую будет перенаправляться пользователь в случае успешной регистрации.
-    # В данном случае указана ссылка на страницу входа для зарегистрированных пользователей.
     success_url = "/login/"
-
-    # Шаблон, который будет использоваться при отображении представления.
     template_name = "AnimalFeed/register.html"
 
     def form_valid(self, form):
-        # Создаём пользователя, если данные в форму были введены корректно.
         form.save()
-
-        # Вызываем метод базового класса
         return HttpResponseRedirect('../login')
 
 
 class LoginFormView(FormView):
     form_class = AuthenticationForm
-
-    # Аналогично регистрации, только используем шаблон аутентификации.
     template_name = "AnimalFeed/login.html"
-
-    # В случае успеха перенаправим на главную.
     success_url = "/"
 
     def form_valid(self, form):

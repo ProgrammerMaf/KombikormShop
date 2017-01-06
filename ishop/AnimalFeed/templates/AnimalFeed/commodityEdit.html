@@ -1,15 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Редактирование страницы товара</title>
-</head>
-<body>
+{% extends "AnimalFeed/base.html" %}
+
+{% block title %}Редактирование страницы товара{% endblock %}
+
+{% block content %}
 <h1>{{ Commodity.commodity_name }}</h1>
 <form method="POST">
     {% csrf_token %}
-    <textarea name="new_info">{{ Commodity.commodity_info }}</textarea>
-    <input type="submit" value="Сохранить изменения"/>
+    <textarea class="form-control" id="exampleTextarea" rows="3" name="new_info">{{ Commodity.commodity_info }}</textarea>
+    <input class="btn btn-default" type="submit" value="Сохранить изменения"/>
 </form>
-</body>
-</html>
+{% endblock %}

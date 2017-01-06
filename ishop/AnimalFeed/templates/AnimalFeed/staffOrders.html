@@ -1,46 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Заказы</title>
-</head>
-<body>
+{% extends "AnimalFeed/base.html" %}
 
-<form method="POST">
-    {% csrf_token %}
-    <table>
-        <tr>
-            <td>
-                Номер заказа
-            </td>
-            <td>
-                Имя
-            </td>
-            <td>
-                Адрес доставки
-            </td>
-            <td>
-                Статус
-            </td>
-        </tr>
-        {% for order in orders %}
-            <tr>
-                <td>
-                    {{ order.id }}
-                </td>
-                <td>
-                    {{ order.customer_name }}
-                </td>
-                <td>
-                    {{ order.delivery_address }}
-                </td>
-                <td>
-                    <input type="text" value="{{ order.order_status }}" id="status" name="status_{{ order.id }}">
-                </td>
-            </tr>
-        {% endfor %}
-    </table>
-<input type="submit" value="Сохранить изменения">
-</form>
-</body>
-</html>
+{% block title %}Заказы{% endblock %}
+
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">Лист заказов</div>
+
+            <table class="table">
+                <tr>
+                    <td>
+                        Номер заказа
+                    </td>
+                    <td>
+                        Имя заказчика
+                    </td>
+                    <td>
+                        Адрес доставки
+                    </td>
+                    <td>
+                        Статус
+                    </td>
+                </tr>
+                {% for order in orders %}
+                    <tr>
+                        <td>
+                            {{ order.id }}
+                        </td>
+                        <td>
+                            {{ order.customer_name }}
+                        </td>
+                        <td>
+                            {{ order.delivery_address }}
+                        </td>
+                        <td>
+                            <input type="text" class="form-control" value="{{ order.order_status }}" id="status"
+                                   name="status_{{ order.id }}">
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <input type="submit" class="btn" value="Сохранить изменения">
+    </form>
+{% endblock %}

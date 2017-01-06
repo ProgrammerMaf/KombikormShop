@@ -1,30 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ Commodity.commodity_name }}</title>
-</head>
-<body>
-<h1>{{ Commodity.commodity_name }}</h1>
-{% autoescape off %}
-    {{ Commodity.commodity_info }}
-{% endautoescape %}
-<br>
-{% for img in images %}
-    <img src="{{ img.picture.url }}" height="150px">
-    <br>
-{% endfor %}
-<br>
-Остаток: {{ Commodity.remained_count }}
-<br>
-Цена: {{ Commodity.cost_per_item }} руб.
-<form action="../" method="POST">
-    {% csrf_token %}
-    <input type='number' min='0' max='{{ Commodity.remained_count }}' id='count' name='count_{{ Commodity.id }}'/>
-    <input type='submit' value="В корзину"/>
-</form>
-{% if user.is_staff %}
-    <a href="/{{ Commodity.id }}/edit">Редактировать.</a>
-{% endif %}
-</body>
-</html>
+{% extends 'AnimalFeed/base.html' %}
+
+{% block title %}{{ Commodity.commodity_name }}{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-8">
+            <h1>{{ Commodity.commodity_name }}</h1>
+            {% autoescape off %}
+                {{ Commodity.commodity_info }}
+            {% endautoescape %}
+            <p>
+                Осталось на складе: {{ Commodity.remained_count }}<br>
+                Цена: {{ Commodity.cost_per_item }} руб.
+            </p>
+            <form action="../" method="POST">
+                {% csrf_token %}
+                <div class="col-md-2">
+                    <input type='number' min='0' max='{{ Commodity.remained_count }}' class="form-control"
+                           id='count'
+                           name='count_{{ Commodity.id }}'/>
+                </div>
+                <div class="col-md-2">
+                    <input type='submit' class="form-control" value="В корзину"/>
+                </div>
+            </form>
+            <p>
+                {% if user.is_staff %}
+                    <a href="/{{ Commodity.id }}/edit">Редактировать</a>
+                {% endif %}
+            </p>
+        </div>
+        <div class="col-md-4">
+            {% for img in images %}
+                <img src="{{ img.picture.url }}" width="100%">
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
