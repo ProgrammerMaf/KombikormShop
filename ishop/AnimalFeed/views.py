@@ -13,6 +13,13 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import render
 import re
 
+TRANSLATIONS = {
+    "password_mismatch": 'Пароль не соответствует правилам.',
+    "invalid_login": 'Ошибка авторизации. Проверьте правильность логина и пароля.'
+}
+def get_translated_first_message(all_messages):
+    msg = [i for i in all_messages][-1]
+    return TRANSLATIONS[msg]
 
 class RegisterFormView(FormView):
     form_class = UserCreationForm
@@ -22,6 +29,13 @@ class RegisterFormView(FormView):
     def form_valid(self, form):
         form.save()
         return HttpResponseRedirect('../login')
+
+    def form_invalid(self, form):
+        cont = self.get_context_data(form=form)
+        if form.error_messages:
+            print(form.error_messages)
+            cont['error_msg'] = get_translated_first_message(form.error_messages)
+        return self.render_to_response(cont)
 
 
 class LoginFormView(FormView):
@@ -36,6 +50,13 @@ class LoginFormView(FormView):
         # Выполняем аутентификацию пользователя.
         login(self.request, self.user)
         return HttpResponseRedirect('../')
+
+    def form_invalid(self, form):
+        cont = self.get_context_data(form=form)
+        if form.error_messages:
+            print(form.error_messages)
+            cont['error_msg'] = get_translated_first_message(form.error_messages)
+        return self.render_to_response(cont)
 
 
 class LogoutView(View):
