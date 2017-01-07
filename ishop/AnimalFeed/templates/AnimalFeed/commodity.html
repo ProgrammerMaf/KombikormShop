@@ -16,12 +16,12 @@
             <form action="../" method="POST">
                 {% csrf_token %}
                 <div class="col-md-2">
-                    <input type='number' min='0' max='{{ Commodity.remained_count }}' class="form-control"
+                    <input type='number' value='1' min='0' max='{{ Commodity.remained_count }}' class="form-control"
                            id='count'
                            name='count_{{ Commodity.id }}'/>
                 </div>
                 <div class="col-md-2">
-                    <input type='submit' class="form-control" value="В корзину"/>
+                    <input type='submit' class="btn btn-primary" value="В корзину"/>
                 </div>
             </form>
             <p>
