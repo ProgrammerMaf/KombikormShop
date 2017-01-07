@@ -27,6 +27,25 @@
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <style>
+        html {
+            position: relative;
+            min-height: 100%;
+        }
+
+        body {
+            /* Отступ снизу, по высоте футера */
+            margin-bottom: 30px !important;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 0;
+            /* Фиксированная высота футера */
+            height: 30px;
+        }
+    </style>
+
 </head>
 
 <body>
@@ -115,11 +134,7 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="row">
-            <div class="col-lg-12">
-                <p>Copyright &copy; artkorm.ru 2017</p>
-            </div>
-        </div>
+        <p>Copyright &copy; artkorm.ru 2017</p>
     </footer>
 </div>
 
