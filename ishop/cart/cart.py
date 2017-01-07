@@ -8,7 +8,7 @@ class Cart(object):
         cart = self.session.get(settings.CART_SESSION_ID)
         if not cart:
             # Сохраняем корзину пользователя в сессию
-            cart = self.session[settings.CART_SESSION_ID] = {}
+            cart = self.session[settings.CART_SESSION_ID] = {'customer_name':'', 'customer_address':'', 'customer_phone':''}
         self.cart = cart
         self.my_field = '42'
 
@@ -32,4 +32,10 @@ class Cart(object):
             self.cart[id]['quantity'] += quantity
         if self.cart[id]['quantity'] <= 0:
             self.cart.pop(id)
+        self.save()
+
+    def save_parameters(self, customer_name='', customer_address='', customer_phone=''):
+        self.cart['customer_name'] = customer_name
+        self.cart['customer_address'] = customer_address
+        self.cart['customer_phone'] = customer_phone
         self.save()

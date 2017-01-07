@@ -13,7 +13,7 @@
                 Осталось на складе: {{ Commodity.remained_count }}<br>
                 Цена: {{ Commodity.cost_per_item }} руб.
             </p>
-            <form action="../" method="POST">
+            <form method="POST">
                 {% csrf_token %}
                 <div class="col-md-2">
                     <input type='number' value='1' min='0' max='{{ Commodity.remained_count }}' class="form-control"

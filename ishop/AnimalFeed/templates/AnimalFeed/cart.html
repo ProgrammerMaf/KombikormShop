@@ -3,13 +3,6 @@
 {% block title %}Подтверждение заказа{% endblock %}
 
 {% block content %}
-    {% if error_msg %}
-        <div class="alert alert-danger" role="alert">
-            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-            <span class="sr-only"></span>
-            {{ error_msg }}
-        </div>
-    {% endif %}
     {% if chosen %}
         <form method="POST">
             {% csrf_token %}

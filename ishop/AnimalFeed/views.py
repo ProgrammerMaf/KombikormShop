@@ -13,6 +13,7 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import render
 import re
 
+
 class RegisterFormView(FormView):
     form_class = UserCreationForm
     success_url = "/login/"
@@ -58,7 +59,7 @@ def update_cart(post_dict, cart, erase_previous_value):
 
 class IndexView(generic.ListView):
     template_name = 'AnimalFeed/index.html'
-    
+
     def get_context_data(self, **kwargs):
         context = dict()
         context['commodities'] = self.get_queryset()
@@ -68,7 +69,6 @@ class IndexView(generic.ListView):
         return Commodity.objects.order_by('commodity_name')
 
     def post(self, request):
-        update_cart(request.POST, Cart(request), False)
         return self.get(request)
 
 
@@ -76,7 +76,8 @@ class OrderConfirmation(generic.ListView):
     template_name = 'AnimalFeed/cart.html'
 
     def get_chosen_items(self, cart):
-        all_items = [(i, cart[i]['name'], cart[i]['quantity'], cart[i]['cost_per_one']) for i in cart]
+        keys = (i for i in filter(lambda i: re.match(r'\d+', i),cart))
+        all_items = [(i, cart[i]['name'], cart[i]['quantity'], cart[i]['cost_per_one']) for i in keys]
         all_items.sort()
         return all_items
 
@@ -95,7 +96,7 @@ class OrderConfirmation(generic.ListView):
     def check_cart(self, request):
         c = Cart(request)
         total_cost = 0
-        for item in c.cart.items():
+        for item in filter(lambda x: re.match(r'\d+', x[0]) is not None, c.cart.items()):
             quantity = item[1]['quantity']
             if quantity < 0:
                 return total_cost, 'Попытка заказать отрицательное количество товара "{0}".'.format(item[1]['name'])
@@ -109,6 +110,19 @@ class OrderConfirmation(generic.ListView):
         if total_cost == 0:
             return total_cost, 'Отправлен пустой заказ.'
         return total_cost, ''
+
+    def get(self, request, **kwargs):
+        auth_error =''
+        if not request.user.is_authenticated():
+            auth_error = 'Для оформления заказа нужно <a href="{0}">Авторизоваться</a>'.format('/login')
+        cart = Cart(request).cart
+        return render(request, self.template_name,
+                      self.get_context_data(
+                          error_msg=auth_error,
+                          customer_name=cart['customer_name'],
+                          delivery_address=cart['customer_address'],
+                          phone=cart['customer_phone']
+                      ))
 
     def page_with_error(self, request, error_message):
         return render(request, self.template_name,
@@ -132,7 +146,7 @@ class OrderConfirmation(generic.ListView):
         )
         new_order.save()
 
-        for item in cart.cart.items():
+        for item in filter(lambda x: re.match(r'\d+', x[0]) is not None, cart.cart.items()):
             quantity = item[1]['quantity']
             id = item[0]
 
@@ -152,15 +166,20 @@ class OrderConfirmation(generic.ListView):
         cart.cart.clear()
 
     def post(self, request):
-        update_cart(request.POST, Cart(request), True)
-        if not request.user.is_authenticated():
-            return self.page_with_error(request, 'Чтобы подтвердить заказ, пожалуйста, авторизуйтесь.   ')
-        total_cost, error_message = self.check_cart(request)
-        if error_message:
-            return self.page_with_error(request, error_message)
         delivery_address = request.POST['delivery_address']
         customer_name = request.POST['customer_name']
         customer_phone = request.POST['customer_phone']
+
+        cart = Cart(request)
+        cart.save_parameters(
+            customer_name=customer_name, customer_phone=customer_phone, customer_address=delivery_address)
+
+        update_cart(request.POST, cart, True)
+        if not request.user.is_authenticated():
+            return self.page_with_error(request, 'Для оформления заказа нужно <a href="{0}">Авторизоваться</a>'.format('/login'))
+        total_cost, error_message = self.check_cart(request)
+        if error_message:
+            return self.page_with_error(request, error_message)
 
         if not re.match(r'^\+?[0-9]+$', customer_phone):
             return self.page_with_error(request, 'Введите номер телефона в формате +79123456789')
@@ -171,8 +190,9 @@ class OrderConfirmation(generic.ListView):
         else:
             delivery_address = 'Без доставки'
 
-        self.save_order(Cart(request), total_cost, with_delivery, delivery_address, customer_name, customer_phone)
+        self.save_order(cart, total_cost, with_delivery, delivery_address, customer_name, customer_phone)
         return HttpResponseRedirect('../accepted/')
+
 
 class AcceptedOrderView(generic.ListView):
     template_name = 'AnimalFeed/acceptedOrder.html'
@@ -180,13 +200,26 @@ class AcceptedOrderView(generic.ListView):
     def get_queryset(self):
         pass
 
+
 class CommodityView(DetailView):
     model = Commodity
     template_name = 'AnimalFeed/commodity.html'
 
+    def post(self, request, **kwargs):
+        update_cart(request.POST, Cart(request), False)
+        cart_path = '/confirmation'
+        return render(request, self.template_name,
+                      self.get_context_data(
+                          pk=kwargs['pk'],
+                          accept_msg="Товар успешно добавлен. Перейти в <a href='{0}'>корзину</a>".format(cart_path)
+                      ))
+
     def get_context_data(self, **kwargs):
         current_commodity = Commodity.objects.get(pk=self.kwargs['pk'])
         context = dict()
+        context['accept_msg'] = ''
+        if 'accept_msg' in kwargs:
+            context['accept_msg'] = kwargs['accept_msg']
         context['Commodity'] = current_commodity
         context['images'] = Photos.objects.filter(commodity=current_commodity)
         return context
