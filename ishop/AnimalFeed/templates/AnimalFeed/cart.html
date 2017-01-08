@@ -2,17 +2,40 @@
 
 {% block title %}Подтверждение заказа{% endblock %}
 
+{% block scripts %}
+    <script>
+        function reloadCost() {
+            var total_cost = 0.0;
+            var list = document.getElementsByClassName('cartItem');
+            for (var i = 0; i < list.length; i++) {
+                var count = parseInt(list[i].getElementsByTagName('input')[0].value);
+                var cost_per_one = parseFloat(list[i].getElementsByTagName('label')[0].innerHTML);
+                total_cost += cost_per_one * count;
+            }
+
+            var result_label = document.getElementsByClassName('costLabel')[0];
+            result_label.innerHTML = "Общая сумма: " + total_cost.toString() + "руб.";
+        }
+    </script>
+{% endblock %}
+
 {% block content %}
     {% if chosen %}
         <form method="POST">
             {% csrf_token %}
             <div class="list-group">
                 {% for id, name, val, cpi in chosen %}
-                    <h1>{{ name }}</h1>
-                    Стоимость: {{ cpi }}<br>
-                    <input type='number' class="form-control" id='count' name='count_{{ id }}' min='0'
-                           value='{{ val }}'/>
+                    <div class="cartItem">
+                        <h1>{{ name }}</h1>
+                        Стоимость: <label>{{ cpi }}</label><br>
+                        <input type='number' class="form-control" id='count' name='count_{{ id }}' min='0'
+                               value='{{ val }}' onchange="reloadCost()"/>
+                    </div>
                 {% endfor %}
+            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label col-form-label-sm costLabel">{{ default_cost }}</label>
             </div>
 
             <div class="form-group row">

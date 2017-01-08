@@ -13,13 +13,48 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import render
 import re
 
-TRANSLATIONS = {
-    "password_mismatch": 'Пароль не соответствует правилам.',
-    "invalid_login": 'Ошибка авторизации. Проверьте правильность логина и пароля.'
-}
-def get_translated_first_message(all_messages):
-    msg = [i for i in all_messages][-1]
-    return TRANSLATIONS[msg]
+
+class RussianLocalization:
+    TRANSLATIONS = {
+        "The two password fields didn't match.": "Пароль не совпадает с подтверждением.",
+        "Enter a valid username. This value may contain only letters, numbers, and @/./+/-/_ characters.":
+            "Введите корректное имя пользователя. Имя пользователя может содержать буквы, цифры, и символы @.+-_",
+        "This password is too short. It must contain at least 8 characters.":
+            "Пароль слишком короткий. Минимальная длина: 8 символов.",
+        "This password is too common.":
+            "Пароль слишком простой. Пожалуйста, выберите другой пароль.",
+        "This password is entirely numeric.":
+            "Пароль не может состоять только из цифр.",
+        "A user with that username already exists.":
+            "Такой пользователь уже существует",
+        "Please enter a correct username and password. Note that both fields may be case-sensitive.":
+            "Пожалуйста, введите корректные логин и пароль. Оба поля чувствительны к регистру."
+    }
+
+    def cut_on_messages(self, all_messages):
+        result = []
+        for i in all_messages.items():
+            if type(i[1]) == type(str):
+                result.append(i[1])
+            else:
+                for j in i[1]:
+                    result.append(str(j))
+        return result
+
+    def get_element(self, key):
+        if key in self.TRANSLATIONS:
+            return self.TRANSLATIONS[key]
+        return 'Перевод не найден: "{0}". Пожалуйста, сообщите администратору.'.format(key)
+
+    def get_translated_error_message(self, all_messages):
+        messages = self.cut_on_messages(all_messages)
+        msg = [self.get_element(i) for i in messages]
+        result = msg[0]
+        for i in range(1, len(msg)):
+            result += '<p>' + msg[i] + '</p>'
+        return result
+
+LOCALIZATION = RussianLocalization()
 
 class RegisterFormView(FormView):
     form_class = UserCreationForm
@@ -32,9 +67,9 @@ class RegisterFormView(FormView):
 
     def form_invalid(self, form):
         cont = self.get_context_data(form=form)
-        if form.error_messages:
-            print(form.error_messages)
-            cont['error_msg'] = get_translated_first_message(form.error_messages)
+        if form.errors:
+            print(form.errors)
+            cont['error_msg'] = LOCALIZATION.get_translated_error_message(form.errors)
         return self.render_to_response(cont)
 
 
@@ -53,9 +88,8 @@ class LoginFormView(FormView):
 
     def form_invalid(self, form):
         cont = self.get_context_data(form=form)
-        if form.error_messages:
-            print(form.error_messages)
-            cont['error_msg'] = get_translated_first_message(form.error_messages)
+        if form.errors:
+            cont['error_msg'] = LOCALIZATION.get_translated_error_message(form.errors)
         return self.render_to_response(cont)
 
 
@@ -102,6 +136,13 @@ class OrderConfirmation(generic.ListView):
         all_items.sort()
         return all_items
 
+    def get_total_cost(self, request):
+        c = Cart(request)
+        total_cost = 0
+        for item in filter(lambda x: re.match(r'\d+', x[0]) is not None, c.cart.items()):
+            total_cost += item[1]['quantity'] * item[1]['cost_per_one']
+        return total_cost
+
     def get_context_data(self, error_msg='', delivery_address='', customer_name='', phone=''):
         context = dict()
         context['error_msg'] = error_msg
@@ -109,6 +150,7 @@ class OrderConfirmation(generic.ListView):
         context['delivery_address'] = delivery_address
         context['customer_name'] = customer_name
         context['customer_phone'] = phone
+        context['default_cost'] = self.get_total_cost(self.request)
         return context
 
     def get_queryset(self):
